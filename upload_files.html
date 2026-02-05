@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <title>v02.04.26</title>
+    <style>
+      :root {
+        --btn-primary: RoyalBlue;            /* #4169e1 */
+        --btn-primary-dark: #365bd1;         /* hover state */
+      }
+      body { margin: 5px;}
+      label {
+        display:inline-block;
+      }
+      .btn {
+        font-family: sans-serif;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        border-radius: 0.3rem;
+        background-color: var(--btn-primary);
+        color: white;
+        /*transition: all 0.0s ease;*/
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      }
+      .btn:hover {
+        background-color: var(--btn-primary-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+      }
+      .btn:active {
+        transform: translateY(0);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      }
+      .hidden { display: none;}
+      #files-chosen{
+        padding: 5px;
+        font-family: sans-serif;
+      }
+      #upload_div {
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='upload_div'>
+      <input type="file" id="upload_btn" multiple hidden />
+      <label class="btn" for="upload_btn">Load</label>
+      <button class="btn">Save</button>
+    </div>
+    <div id="files-chosen">No files chosen</div>
+    <hr/>
+
+    <script type="module">
+
+      const btn = document.getElementById('upload_btn');
+      const filesChosen = document.getElementById('files-chosen');
+      let uploaded_files = [];
+
+      document.addEventListener('dragover', e => {
+        e.preventDefault();
+      });
+
+      document.addEventListener('drop', e => {
+        btn.files = e.dataTransfer.files;
+        btn.dispatchEvent(new Event("change"));
+        e.preventDefault();
+      });
+
+      btn.onchange = async e => {
+        [...e.target.files].map(async f => {
+          uploaded_files.push(f.name);
+          filesChosen.innerHTML = uploaded_files.map(x => `<div>${x}</div>`).join("");
+          const text = await f.text();
+          const data = JSON.parse(text);
+          process_file(f.name, data);
+        });
+      };
+
+      const process_file = (name, data) => {
+        console.log(`Processing file ${name}`);
+        console.log(data);
+      };
+
+    </script>
+  </body>
+</html>
